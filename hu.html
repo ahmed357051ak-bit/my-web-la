@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>كاشير يدوي متطور</title>
+    <style>
+        body { font-family: sans-serif; background: #f4f4f4; padding: 20px; }
+        .container { max-width: 400px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 5px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 5px; }
+        .receipt-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #eee; }
+        .del-btn { background: #dc3545; padding: 5px 10px; border-radius: 3px; font-size: 0.8rem; cursor: pointer; }
+        .total-section { margin-top: 15px; font-size: 1.3rem; font-weight: bold; color: #333; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h3>تسجيل طلب يدوي</h3>
+    <input type="text" id="pName" placeholder="اسم المنتج">
+    <input type="number" id="pPrice" placeholder="سعر الحبة">
+    <input type="number" id="pQty" placeholder="الكمية" value="1">
+    <button onclick="addItem()">إضافة للفاتورة</button>
+
+    <hr>
+    <h4>الفاتورة</h4>
+    <div id="receiptList"></div>
+    <div class="total-section">الإجمالي: <span id="total">0</span> ريال</div>
+</div>
+
+<script>
+    let total = 0;
+
+    function addItem() {
+        const name = document.getElementById('pName').value;
+        const price = parseFloat(document.getElementById('pPrice').value) || 0;
+        const qty = parseInt(document.getElementById('pQty').value) || 1;
+
+        if (name && price > 0) {
+            const subtotal = price * qty;
+            const list = document.getElementById('receiptList');
+            
+            const div = document.createElement('div');
+            div.className = 'receipt-item';
+            div.dataset.price = subtotal; // حفظ السعر الخاص بهذا العنصر للحذف لاحقاً
+            
+            div.innerHTML = `
+                <span>${name} (${qty} × ${price}) = <strong>${subtotal}</strong> ريال</span>
+                <span class="del-btn" onclick="removeItem(this)">حذف</span>
+            `;
+            list.appendChild(div);
+
+            total += subtotal;
+            document.getElementById('total').textContent = total;
+
+            document.getElementById('pName').value = '';
+            document.getElementById('pPrice').value = '';
+            document.getElementById('pQty').value = '1';
+            document.getElementById('pName').focus();
+        } else {
+            alert("يرجى إدخال اسم المنتج والسعر");
+        }
+    }
+
+    function removeItem(btn) {
+        const itemDiv = btn.parentElement;
+        const price = parseFloat(itemDiv.dataset.price);
+        total -= price;
+        document.getElementById('total').textContent = total;
+        itemDiv.remove();
+    }
+</script>
+
+</body>
+</html>
